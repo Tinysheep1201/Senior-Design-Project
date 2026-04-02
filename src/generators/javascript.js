@@ -105,9 +105,6 @@ ${statements}}
 `;
 };
 
-<<<<<<< HEAD
-=======
-
 forBlock['ir_sensor_configuration'] = function(block, generator) {
   const sensorID = block.getFieldValue('sensor');
   const leftPin = block.getFieldValue('leftPin');
@@ -159,8 +156,6 @@ long ${generator.FUNCTION_NAME_PLACEHOLDER_}(int trig, int echo) {
 
   return [`${func}(${trig}, ${echo})`, generator.ORDER_ATOMIC];
 };
-
->>>>>>> master
 //Keep existing custom generators (like add_text) without overriding all built-in blocks
 
 Object.assign(javascriptGenerator.forBlock, forBlock);

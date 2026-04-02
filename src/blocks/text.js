@@ -39,11 +39,8 @@ const motorConfiguration =
   ],
   previousStatement: null,
   nextStatement: null,
-<<<<<<< HEAD
-  colour: 225
-=======
   colour: 300
->>>>>>> master
+
 }
                     
 const motorPower = {
@@ -67,20 +64,12 @@ const motorPower = {
   ],
   previousStatement: null,
   nextStatement: null,
-<<<<<<< HEAD
-  colour: 210
-=======
   colour: 300
->>>>>>> master
 };
 
 const motorDurationLoop = {
   type: "motor_duration_loop",
-<<<<<<< HEAD
-  message0: "run motors for %1 seconds %2",
-=======
   message0: "run motors for %1 second(s) %2",
->>>>>>> master
   args0: [
     {
       type: "field_number",
@@ -95,9 +84,6 @@ const motorDurationLoop = {
   ],
   previousStatement: null,
   nextStatement: null,
-<<<<<<< HEAD
-  colour: 120
-=======
   colour: 300
 };
 
@@ -148,7 +134,6 @@ const ultrasonicSensor = {
   ],
   output: "Number",
   colour: 0
->>>>>>> master
 };
 
 // Create the block definitions for the JSON-only blocks.
@@ -158,9 +143,6 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   motorConfiguration,
   motorPower,
   motorDurationLoop,
-<<<<<<< HEAD
-=======
   irSensorConfiguration,
   ultrasonicSensor,
->>>>>>> master
 ]);
