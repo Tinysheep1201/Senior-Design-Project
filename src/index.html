@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Blockly Sample App</title>
+  </head>
+  <body>
+    <div id="pageContainer">
+      <div id="outputPane">
+        
+        <pre id="generatedCode"><code></code></pre>
+		<!-- Copy button -->
+        <button id="copyBtn">Copy Code</button>
+        <div id="output"></div>
+      </div>
+      <div id="blocklyDiv"></div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+    <script>
+      // Copy button logic
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.addEventListener('click', () => {
+        const codeElement = document.getElementById('generatedCode');
+        const text = codeElement.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Code copied to clipboard!');
+        }).catch(err => {
+          alert('Failed to copy: ' + err);
+        });
+      });
+    </script>
+  </body>
+</html>
