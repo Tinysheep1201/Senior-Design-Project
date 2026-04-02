@@ -1,16 +1,19 @@
 import {javascriptGenerator} from 'blockly/javascript';
 export const forBlock = Object.create(null);
 
-/**
- * Wraps Arduino sketch
- */
+// Wraps Arduino sketch
 export function finishArduino(code, generator) {
   let setups = '';
-
+  let loopPrefix = '';
+  
   if (generator.setups_) {
     for (let key in generator.setups_) {
       setups += generator.setups_[key] + '\n';
     }
+  }
+  
+  if (generator.usesStartTime_) {
+    loopPrefix = 'unsigned long startTime;\n';
   }
 
   return `void setup() {
@@ -18,6 +21,7 @@ ${setups}
 }
 
 void loop() {
+${loopPrefix}
 ${code}
 }`;
 }
@@ -30,9 +34,7 @@ function getMotorMap(generator) {
   return generator.motorMap_;
 }
 
-/**
- * Motor block generator → setup only
- */
+
 javascriptGenerator.forBlock['motor_configuration'] = function(block, generator) {
   const motor = block.getFieldValue('motor');  // motor number
   const pin1 = block.getFieldValue('pin1');
@@ -65,7 +67,6 @@ forBlock['motor_power'] = function(block, generator) {
   const motorIDs = motorIDsRaw.split(',').map(id => id.trim()).filter(id => id !== '');
   
   const direction = block.getFieldValue('direction');
-  const time = block.getFieldValue('time');
 
   const motorMap = generator.motorMap_ || {};
   let code = '';
@@ -81,18 +82,29 @@ forBlock['motor_power'] = function(block, generator) {
       code += `digitalWrite(${motor.pin1}, HIGH);\ndigitalWrite(${motor.pin2}, LOW);\n`;
     } else if (direction === 'REVERSE') {
       code += `digitalWrite(${motor.pin1}, LOW);\ndigitalWrite(${motor.pin2}, HIGH);\n`;
-    } else { // STOP
+    } else { 
       code += `digitalWrite(${motor.pin1}, LOW);\ndigitalWrite(${motor.pin2}, LOW);\n`;
     }
   });
-
-  code += `delay(${time} * 1000);\n`;
+  
   return code;
 };
 
 
+forBlock['motor_duration_loop'] = function(block, generator) {
+  const time = block.getFieldValue('TIME');
+  const statements = javascriptGenerator.statementToCode(block, 'motors');
 
-/**
- * Keep existing custom generators (like add_text) without overriding all built-in blocks
- */
+  generator.usesStartTime_ = true;
+
+  // Wrap the inner code with a delay loop
+  return `
+startTime = millis();
+while (millis() - startTime < ${time} * 1000) {
+${statements}}
+`;
+};
+
+//Keep existing custom generators (like add_text) without overriding all built-in blocks
+
 Object.assign(javascriptGenerator.forBlock, forBlock);

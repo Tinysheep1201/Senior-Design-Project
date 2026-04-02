@@ -295,6 +295,10 @@ export const toolbox = {
 		  kind: 'block',
 		  type: 'motor_power'
 		},
+		{
+		  kind: 'block',
+		  type: 'motor_duration_loop'
+		}
 	  ]
 	},
 

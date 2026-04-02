@@ -44,7 +44,7 @@ const motorConfiguration =
                     
 const motorPower = {
   type: 'motor_power',
-  message0: 'Motors %1 Direction %2 Time %3 sec',
+  message0: 'Motors %1 Direction %2',
   args0: [
     {
       type: 'field_input',
@@ -60,16 +60,30 @@ const motorPower = {
         ['Stop', 'STOP']
       ]
     },
-    {
-      type: 'field_number',
-      name: 'time',
-      value: 1,
-      min: 0
-    }
   ],
   previousStatement: null,
   nextStatement: null,
   colour: 210
+};
+
+const motorDurationLoop = {
+  type: "motor_duration_loop",
+  message0: "run motors for %1 seconds %2",
+  args0: [
+    {
+      type: "field_number",
+      name: "TIME",
+      value: 1,
+      min: 0
+    },
+    {
+      type: "input_statement",
+      name: "motors"
+    }
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 120
 };
 
 // Create the block definitions for the JSON-only blocks.
@@ -78,4 +92,5 @@ const motorPower = {
 export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   motorConfiguration,
   motorPower,
+  motorDurationLoop,
 ]);
