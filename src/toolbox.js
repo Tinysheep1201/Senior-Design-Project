@@ -285,7 +285,11 @@ export const toolbox = {
 	{
 	  kind: 'category',
 	  name: 'Motors',
+<<<<<<< HEAD
 	  categorystyle: 'variable_category',
+=======
+	  categorystyle: 'procedure_category',
+>>>>>>> master
 	  contents: [
 		{
 		  kind: 'block',
@@ -301,6 +305,25 @@ export const toolbox = {
 		}
 	  ]
 	},
+<<<<<<< HEAD
 
+=======
+	
+	{
+	  kind: 'category',
+	  name: 'Sensors',
+	  categorystyle: 'text_category',
+	  contents: [
+		{
+        kind: 'block',
+        type: 'ir_sensor_configuration'
+        },
+        {
+        kind: 'block',
+		type: 'ultrasonic_sensor'
+		}
+	  ]
+	}
+>>>>>>> master
   ],
 };

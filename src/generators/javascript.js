@@ -105,6 +105,62 @@ ${statements}}
 `;
 };
 
+<<<<<<< HEAD
+=======
+
+forBlock['ir_sensor_configuration'] = function(block, generator) {
+  const sensorID = block.getFieldValue('sensor');
+  const leftPin = block.getFieldValue('leftPin');
+  const rightPin = block.getFieldValue('rightPin');
+
+  generator.setups_ = generator.setups_ || {};
+  generator.irMap_ = generator.irMap_ || {};
+
+  // Save pins in generator map for later blocks
+  generator.irMap_[sensorID] = {
+    leftPin,
+    rightPin,
+    blockId: block.id
+  };
+
+  // Write pinMode in setup()
+  generator.setups_[block.id] = `  // IR Sensor ${sensorID} setup
+  pinMode(${leftPin}, INPUT);
+  pinMode(${rightPin}, INPUT);`;
+
+  return ''; // no loop code
+};
+
+forBlock['ultrasonic_sensor'] = function(block, generator) {
+  const trig = block.getFieldValue('TRIG');
+  const echo = block.getFieldValue('ECHO');
+
+  generator.setups_ = generator.setups_ || {};
+
+  generator.setups_['ULTRA_' + trig] = `
+  pinMode(${trig}, OUTPUT);
+  pinMode(${echo}, INPUT);`;
+
+  const func = generator.provideFunction_(
+    'getDistance',
+    `
+long ${generator.FUNCTION_NAME_PLACEHOLDER_}(int trig, int echo) {
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+
+  long duration = pulseIn(echo, HIGH);
+  long distance = duration * 0.034 / 2;
+  return distance;
+}`
+  );
+
+  return [`${func}(${trig}, ${echo})`, generator.ORDER_ATOMIC];
+};
+
+>>>>>>> master
 //Keep existing custom generators (like add_text) without overriding all built-in blocks
 
 Object.assign(javascriptGenerator.forBlock, forBlock);
