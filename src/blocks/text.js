@@ -1,22 +1,10 @@
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import * as Blockly from 'blockly/core';
 
-// Create a custom block called 'add_text' that adds
-// text to the output div on the sample app.
-// This is just an example and you should replace this with your
-// own custom blocks.
-
-const motorConfiguration =
-{
+const motorConfiguration = {
   type: "motor_configuration",
   tooltip: "",
   helpUrl: "",
-  message0: "Motor %1 Pin %2 Pin %3",
+  message0: "Motor %1 Pin1 %2 Pin2 %3 EN Pin %4",
   args0: [
     {
       type: "field_number",
@@ -36,16 +24,21 @@ const motorConfiguration =
       value: 2,
       min: 0
     },
+    {
+      type: "field_number",
+      name: "en",
+      value: 3,
+      min: 0
+    },
   ],
   previousStatement: null,
   nextStatement: null,
   colour: 300
-
-}
+};
                     
 const motorPower = {
   type: 'motor_power',
-  message0: 'Motors %1 Direction %2',
+  message0: 'Motors %1 Direction %2 Power %3',
   args0: [
     {
       type: 'field_input',
@@ -59,6 +52,14 @@ const motorPower = {
         ['Forward', 'FORWARD'],
         ['Reverse', 'REVERSE'],
         ['Stop', 'STOP']
+      ]
+    },
+    {
+      type: 'field_dropdown',
+      name: 'power',
+      options: [
+        ['Low', 'LOW'],
+        ['High', 'HIGH']
       ]
     },
   ],
