@@ -34,25 +34,32 @@ ws.addChangeListener((e) => {
   runCode();
 });
 
+// Handle block deletion
 ws.addChangeListener((event) => {
   if (event.type === Blockly.Events.BLOCK_DELETE) {
-    // event.ids is an array of deleted block IDs
     event.ids.forEach(id => {
       // Remove from setups_
       if (javascriptGenerator.setups_ && javascriptGenerator.setups_[id]) {
         delete javascriptGenerator.setups_[id];
       }
 
-      // Also remove from motor map if it exists
+      // Remove from motor map
       if (javascriptGenerator.motorMap_) {
-        // Look through all motors to find which block ID matches
         for (const motorID in javascriptGenerator.motorMap_) {
           const motor = javascriptGenerator.motorMap_[motorID];
-          // Compare block IDs (we can store block.id in motorMap too)
           if (motor.blockId === id) {
             delete javascriptGenerator.motorMap_[motorID];
           }
         }
+      }
+
+      // Remove any global functions added by this block (like ultrasonic distance functions)
+      if (javascriptGenerator.blockFunctions_ && javascriptGenerator.blockFunctions_[id]) {
+        const funcName = javascriptGenerator.blockFunctions_[id];
+        if (javascriptGenerator.globalFunctions_ && javascriptGenerator.globalFunctions_[funcName]) {
+          delete javascriptGenerator.globalFunctions_[funcName];
+        }
+        delete javascriptGenerator.blockFunctions_[id];
       }
     });
 

@@ -13,21 +13,21 @@ const motorConfiguration = {
       min: 0
     },
     {
-      type: "field_number",
+      type: "field_input",
       name: "pin1",
-      value: 1,
+      text: 1,
       min: 0
     },
     {
-      type: "field_number",
+      type: "field_input",
       name: "pin2",
-      value: 2,
+      text: 2,
       min: 0
     },
     {
-      type: "field_number",
+      type: "field_input",
       name: "en",
-      value: 3,
+      text: 3,
       min: 0
     },
   ],
@@ -42,7 +42,7 @@ const motorPower = {
   args0: [
     {
       type: 'field_input',
-      name: 'motorIDs', // can enter "0,1" for multiple motors
+      name: 'motorIDs',
       text: '0'
     },
     {
@@ -90,7 +90,7 @@ const motorDurationLoop = {
 
 const irSensorConfiguration = {
   type: "ir_sensor_configuration",
-  message0: "IR Sensor %1 Left Pin %2 Right Pin %3",
+  message0: "IR Sensor %1 Pin %2",
   args0: [
     {
       type: "field_number",
@@ -99,15 +99,37 @@ const irSensorConfiguration = {
       min: 0
     },
     {
+      type: "field_input",
+      name: "Pin",
+      text: "A0",
+      min: 0
+    },
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 0
+};
+
+const ultrasonicSensorConfiguration = {
+  type: "ultrasonic_sensor_configuration",
+  message0: "Ultrasonic %1 trig %2 echo %3",
+  args0: [
+    {
       type: "field_number",
-      name: "leftPin",
-      value: 2,
+      name: "sensor",
+      value: 0,
       min: 0
     },
     {
-      type: "field_number",
-      name: "rightPin",
-      value: 3,
+      type: "field_input",
+      name: "TRIG",
+      text: "A0",
+      min: 0
+    },
+    {
+      type: "field_input",
+      name: "ECHO",
+      text: "A0",
       min: 0
     }
   ],
@@ -116,20 +138,14 @@ const irSensorConfiguration = {
   colour: 0
 };
 
-const ultrasonicSensor = {
-  type: "ultrasonic_sensor",
-  message0: "Ultrasonic trig %1 echo %2",
+const ultrasonicDistance = {
+  type: "ultrasonic_distance",
+  message0: "Ultrasonic sensor %1 distance (cm)",
   args0: [
     {
       type: "field_number",
-      name: "TRIG",
-      value: 9,
-      min: 0
-    },
-    {
-      type: "field_number",
-      name: "ECHO",
-      value: 10,
+      name: "sensor",
+      value: 0,
       min: 0
     }
   ],
@@ -145,5 +161,6 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   motorPower,
   motorDurationLoop,
   irSensorConfiguration,
-  ultrasonicSensor,
+  ultrasonicSensorConfiguration,
+  ultrasonicDistance,
 ]);

@@ -4,10 +4,10 @@ export const forBlock = Object.create(null);
 // Wraps Arduino sketch with standard 2-space indentation
 export function finishArduino(code, generator) {
   let setups = '';
-
+  
+  // Collect setup lines
   if (generator.setups_) {
     for (let key in generator.setups_) {
-      // indent setup lines by 2 spaces
       setups += generator.setups_[key]
         .split('\n')
         .map(line => '  ' + line.trim())
@@ -15,19 +15,27 @@ export function finishArduino(code, generator) {
     }
   }
 
-  // indent loop code by 2 spaces
+  // Collect all global functions (like getDistance_0)
+  let globalFunctions = '';
+  if (generator.globalFunctions_) {
+    for (const funcName in generator.globalFunctions_) {
+      globalFunctions += generator.globalFunctions_[funcName] + '\n\n';
+    }
+  }
+
+  // Indent loop code by 2 spaces
   const indentedCode = code
     .split('\n')
     .map(line => line ? '  ' + line.trim() : '')
     .join('\n');
 
-  return `void setup() {
+  return `${globalFunctions}void setup() {
 ${setups}
 }
 
 void loop() {
 ${indentedCode}
-  while(true);
+delay(200);
 }`;
 }
 
@@ -127,49 +135,68 @@ ${stopCode}`;
 // IR sensor generator
 forBlock['ir_sensor_configuration'] = function(block, generator) {
   const sensorID = block.getFieldValue('sensor');
-  const leftPin = block.getFieldValue('leftPin');
-  const rightPin = block.getFieldValue('rightPin');
+  const Pin = block.getFieldValue('Pin');
 
   generator.setups_ = generator.setups_ || {};
   generator.irMap_ = generator.irMap_ || {};
 
-  generator.irMap_[sensorID] = { leftPin, rightPin, blockId: block.id };
+  generator.irMap_[sensorID] = { Pin, blockId: block.id };
 
   generator.setups_[block.id] = `// IR Sensor ${sensorID} setup
-pinMode(${leftPin}, INPUT);
-pinMode(${rightPin}, INPUT);`;
+pinMode(${Pin}, INPUT);`;
 
   return '';
 };
 
 // Ultrasonic sensor generator
-forBlock['ultrasonic_sensor'] = function(block, generator) {
+forBlock['ultrasonic_sensor_configuration'] = function(block, generator) {
+  const sensorID = block.getFieldValue('sensor');
   const trig = block.getFieldValue('TRIG');
   const echo = block.getFieldValue('ECHO');
 
   generator.setups_ = generator.setups_ || {};
+  generator.ultraMap_ = generator.ultraMap_ || {};
 
-  generator.setups_['ULTRA_' + trig] = `
+  // Store sensor info
+  generator.ultraMap_[sensorID] = { trig, echo, blockId: block.id };
+
+  // Setup pins 
+  generator.setups_[block.id] = `// Ultrasonic Sensor ${sensorID} setup
 pinMode(${trig}, OUTPUT);
 pinMode(${echo}, INPUT);`;
 
-  const func = generator.provideFunction_(
-    'getDistance',
-    `
-long ${generator.FUNCTION_NAME_PLACEHOLDER_}(int trig, int echo) {
-  digitalWrite(trig, LOW);
+  return ''; 
+};
+
+// Ultrasonic sensor measuring distance 
+forBlock['ultrasonic_distance'] = function(block, generator) {
+  const sensorID = block.getFieldValue('sensor');
+  const sensor = (generator.ultraMap_ || {})[sensorID];
+  if (!sensor) return [`// ERROR: Sensor ${sensorID} not configured!`, generator.ORDER_ATOMIC];
+
+  generator.globalFunctions_ = generator.globalFunctions_ || {};
+  generator.blockFunctions_ = generator.blockFunctions_ || {}; // NEW: map blockId -> function name
+
+  const funcName = `getDistance_${sensorID}`;
+  if (!generator.globalFunctions_[funcName]) {
+    const funcCode = `
+long ${funcName}() {
+
+  digitalWrite(${sensor.trig}, LOW);
   delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
+  digitalWrite(${sensor.trig}, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trig, LOW);
+  digitalWrite(${sensor.trig}, LOW);
 
-  long duration = pulseIn(echo, HIGH);
-  long distance = duration * 0.034 / 2;
+  long duration = pulseIn(${sensor.echo}, HIGH);
+  long distance = duration * 0.034 / 2; // cm
   return distance;
-}`
-  );
+}`;
+    generator.globalFunctions_[funcName] = funcCode;
+    generator.blockFunctions_[block.id] = funcName; // track which block added this function
+  }
 
-  return [`${func}(${trig}, ${echo})`, generator.ORDER_ATOMIC];
+  return [`${funcName}()`, generator.ORDER_ATOMIC];
 };
 
 Object.assign(javascriptGenerator.forBlock, forBlock);

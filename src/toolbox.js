@@ -299,7 +299,11 @@ export const toolbox = {
         },
         {
         kind: 'block',
-		type: 'ultrasonic_sensor'
+		type: 'ultrasonic_sensor_configuration'
+		},
+		{
+        kind: 'block',
+		type: 'ultrasonic_distance'
 		}
 	  ]
 	}
